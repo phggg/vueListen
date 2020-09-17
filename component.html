@@ -20,6 +20,17 @@
       @add-course="addCourse"
       v-model="course"
     ></course-add>
+
+    <!--  批量更新价格  -->
+    <p>
+      <input value="text" v-model.number="price" />
+      <input
+        type="button"
+        value="批量更新价格"
+        @click="batchUpdate()"
+      />
+    </p>
+
     <!--  计算属性  -->
     <p>课程总数：{{courseTotal}}</p>
     <!--  监听器  -->
@@ -78,31 +89,58 @@
           <p v-if="courses.length === 0">没有任何课程信息</p>
           <div
             v-for="item in courses"
-            :key="item"
+            :key="item.name"
             :class="{active: item === selectedCourse}"
             @click="selectCourse(item)"
           >
-            {{item}}
+            {{item.name}} -¥{{item.price}}
           </div>
         </div>
       `
     })
+
+    function getCourses() {
+      return new Promise(resolve => {
+        setTimeout(() => {
+          resolve([{name: 'web全栈'},{name: 'web高级'}])
+        }, 2000)
+      })
+    }
 
     const app = new Vue({
       el: '#app',
       data(){
         return {
           title: 'hello world',
-          courses: ['web全栈','web高级'],
+          // courses: ['web全栈','web高级'],
+          // courses: [{name: 'web全栈'},{name: 'web高级'}],
+          courses: [],
           courseTotalWatch: 0,
-          course: ''
+          course: '',
+          price: 0
         }
+      },
+      async created(){
+        // 组件实例已创建，由于未挂载，dom不存在
+        const courses = await getCourses()
+        this.courses = courses
+
+        // 批量更新商品价格
+        this.batchUpdate()
       },
       methods: {
         addCourse() {
           if(!this.course) return
           this.courses.push(this.course)
           this.course = ''
+        },
+        batchUpdate(){
+          this.courses.forEach(item => {
+            // 重新设置无效，vue无法深度监听
+            // item.price = this.price
+
+            this.$set(item, 'price', this.price)
+          })
         }
       },
       computed: {
