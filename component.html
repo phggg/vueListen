@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>购物车11</title>
+  <script src="../vue.js"></script>
+  <style>
+    .active{
+      background-color: cadetblue;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <h2 v-html="title"></h2>
+    <course-list
+      :courses="courses"
+    ></course-list>
+    <course-add
+      @add-course="addCourse"
+      v-model="course"
+    ></course-add>
+    <!--  计算属性  -->
+    <p>课程总数：{{courseTotal}}</p>
+    <!--  监听器  -->
+    <p>课程总数：{{courseTotalWatch}}</p>
+  </div>
+  <script>
+    // 课程新增组件
+    Vue.component('course-add',{
+      // data(){
+      //   return {
+      //     course: '',
+      //   }
+      // },
+      props: {
+        value: {
+          type: String,
+        }
+      },
+      methods:{
+        addCourse(){
+          // 派发事件通知父组件新增课程
+          this.$emit('add-course')
+        },
+        onInput(e){
+          this.$emit('input', e.target.value)
+        }
+      },
+      template: `
+        <div>
+          <input type="text" :value="value" @input="onInput" @keydown.enter="addCourse"/>
+          <input type="button" @click="addCourse" value="新增" />
+        </div>
+      `
+    })
+
+    // 课程列表组件
+    Vue.component('course-list',{
+      data(){
+        return{
+          selectedCourse: '',
+        }
+      },
+      props: {
+        courses: {
+          type: Array,
+          default: []
+        },
+      },
+      methods: {
+        selectCourse(course){
+          this.selectedCourse = course
+        }
+      },
+      template: `
+        <div>
+          <p v-if="courses.length === 0">没有任何课程信息</p>
+          <div
+            v-for="item in courses"
+            :key="item"
+            :class="{active: item === selectedCourse}"
+            @click="selectCourse(item)"
+          >
+            {{item}}
+          </div>
+        </div>
+      `
+    })
+
+    const app = new Vue({
+      el: '#app',
+      data(){
+        return {
+          title: 'hello world',
+          courses: ['web全栈','web高级'],
+          courseTotalWatch: 0,
+          course: ''
+        }
+      },
+      methods: {
+        addCourse() {
+          if(!this.course) return
+          this.courses.push(this.course)
+          this.course = ''
+        }
+      },
+      computed: {
+        courseTotal(){
+          // 计算属性有缓存性：如果值没有发生变化，则页面不会重新渲染
+          return this.courses.length + '门'
+        }
+      },
+      // 默认情况下watch不会立刻执行
+      // watch: {
+      //   courses(newValue, oldValue){
+      //     this.courseTotalWatch = newValue.length + '门'
+      //   }
+      // }
+      watch: {
+        courses: {
+          immediate: true, // 立刻执行
+          deep: true, // 深度监听
+          handler(newValue, oldValue){
+            this.courseTotalWatch = newValue.length + '门'
+          }
+        }
+      }
+
+    })
+
+    setTimeout(() => {
+      app.title = '<div>123123</div>'
+    }, 1000)
+  </script>
+</body>
+</html>

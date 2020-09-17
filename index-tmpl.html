@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>购物车-render</title>
+  <script src="../vue.js"></script>
+  <style>
+    .active {
+      background-color: cadetblue;
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+  <!--    <h2 v-html="title"></h2>-->
+  <!--    <div-->
+  <!--      v-for="item in courses"-->
+  <!--      :key="item"-->
+  <!--      :class="{active: item === selectedCourse}"-->
+  <!--      @click="selectCourse(item)"-->
+  <!--    >-->
+  <!--      {{item}}-->
+  <!--    </div>-->
+  <!--    <input type="text" v-model="course" @keydown.enter="addCourse"/>-->
+  <!--    <input type="button" @click="addCourse" value="新增" />-->
+</div>
+<script>
+  const app = new Vue({
+    el: '#app',
+    data() {
+      return {
+        title: 'hello world',
+        courses: ['web全栈', 'web高级'],
+        selectedCourse: '',
+        course: '',
+      }
+    },
+    methods: {
+      addCourse() {
+        // 1.添加course到数组
+        if (!this.course) return
+        this.courses.push(this.course)
+        // 2.清空course
+        this.course = ''
+      },
+      selectCourse(course) {
+        console.log(123123)
+        this.selectedCourse = course
+      }
+    },
+    render() {
+      with (this) {
+        return _c('div', {
+          attrs: {
+            "id": "app"
+          }
+        }, [_c('h2', {
+          domProps: {
+            "innerHTML": _s(title)
+          }
+        }), _v(" "), _l((courses), function (item) {
+          return _c('div', {
+            key: item,
+            class: {
+              active: item === selectedCourse
+            },
+            on: {
+              "click": function ($event) {
+                return selectCourse(item)
+              }
+            }
+          }, [_v("\n      " + _s(item) + "\n    ")])
+        }), _v(" "), _c('input', {
+          directives: [{
+            name: "model",
+            rawName: "v-model",
+            value: (course),
+            expression: "course"
+          }],
+          attrs: {
+            "type": "text"
+          },
+          domProps: {
+            "value": (course)
+          },
+          on: {
+            "keydown": function ($event) {
+              if (!$event.type.indexOf('key') && _k($event.keyCode, "enter", 13, $event.key, "Enter"))
+                return null;
+              return addCourse($event)
+            },
+            "input": function ($event) {
+              if ($event.target.composing)
+                return;
+              course = $event.target.value
+            }
+          }
+        }), _v(" "), _c('input', {
+          attrs: {
+            "type": "button",
+            "value": "新增"
+          },
+          on: {
+            "click": addCourse
+          }
+        })], 2)
+      }
+    }
+  })
+
+  console.log(app.$options.render)
+</script>
+</body>
+</html>
