@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <style>
+    .message-box{
+      padding: 10px 20px;
+      background: #4fc08d;
+      border: 1px solid #42b983;
+    }
+    .message-box-close{
+      float: right;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+
+    <message :show.sync="isShow">
+      <!--  作用域插槽  -->
+      <template v-slot:nav="slotProps">
+        <h2>{{slotProps.navTitle}}</h2>
+      </template>
+
+      <!--  具名插槽  -->
+      <template v-slot:title>
+        <h2>恭喜</h2>
+      </template>
+      <!--  默认插槽内容  -->
+      <template>新增成功</template>
+
+    </message>
+    <input
+      type="button"
+      value="新增"
+      @click="addCourse"
+    />
+  </div>
+
+
+  <script src="vue.js"></script>
+  <script>
+
+    Vue.component('message',{
+      props: {
+        show:{
+          type: Boolean,
+          default: false
+        }
+      },
+      data(){
+        return {
+          navTitleTest: '来自message的标题'
+        }
+      },
+      template: `
+        <div class="message-box" v-if="show">
+          <slot name="nav" :navTitle="navTitleTest">默认标题</slot>
+          <slot name="title">默认标题</slot>
+          <slot></slot>
+          <span class="message-box-close" @click="$emit('update:show',false)">X</span>
+        </div>
+      `
+    })
+
+    let app = new Vue({
+      el: '#app',
+      data(){
+        return {
+          isShow: false
+        }
+      },
+      methods: {
+        addCourse(){
+          this.isShow = true
+        }
+      }
+    })
+  </script>
+</body>
+</html>
